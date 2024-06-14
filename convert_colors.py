@@ -1,0 +1,121 @@
+import os
+import json
+
+# Function to invert a color represented in hexadecimal format
+def invert_color(color):
+    """
+    Inverts the color represented in hexadecimal format (with or without alpha channel).
+
+    Args:
+    - color (str): Color in hexadecimal format (#RRGGBB or #RRGGBBAA).
+
+    Returns:
+    - str: Inverted color in the same format as input.
+    
+    Raises:
+    - ValueError: If the color format is invalid.
+    """
+    if color.startswith("#"):
+        color = color.lstrip('#')
+        if len(color) == 6:
+            # RGB format without alpha
+            r, g, b = color[:2], color[2:4], color[4:]
+            r = format(255 - int(r, 16), '02x')
+            g = format(255 - int(g, 16), '02x')
+            b = format(255 - int(b, 16), '02x')
+            return f"#{r}{g}{b}"
+        elif len(color) == 8:
+            # RGBA format with alpha
+            r, g, b, a = color[:2], color[2:4], color[4:6], color[6:]
+            r = format(255 - int(r, 16), '02x')
+            g = format(255 - int(g, 16), '02x')
+            b = format(255 - int(b, 16), '02x')
+            return f"#{r}{g}{b}{a}"
+        else:
+            raise ValueError(f"Invalid color format: {color}")
+    else:
+        return color
+
+# Function to recursively invert style attributes in a JSON-like data structure
+def invert_style_recursive(data):
+    """
+    Recursively inverts styles in a JSON-like data structure.
+
+    Args:
+    - data (dict or list): JSON-like data structure to be processed.
+
+    Returns:
+    - dict or list: Processed data with inverted styles.
+    """
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if key == "styling" and isinstance(value, dict):
+                data[key] = invert_style_values(value)
+            else:
+                data[key] = invert_style_recursive(value)
+    elif isinstance(data, list):
+        for i, item in enumerate(data):
+            data[i] = invert_style_recursive(item)
+    return data
+
+# Function to invert specific style attributes in a dictionary
+def invert_style_values(style):
+    """
+    Inverts specific style attributes in a dictionary.
+
+    Args:
+    - style (dict): Dictionary containing style attributes.
+
+    Returns:
+    - dict: Processed dictionary with inverted style attributes.
+    """
+    inverted_style = {}
+    for key, value in style.items():
+        if key.startswith("bar"):
+            inverted_style[key] = value  # Preserve "bar" keys unchanged
+        elif isinstance(value, str) and (key.endswith("Color") or key.endswith("BgColor")):
+            inverted_style[key] = invert_color(value)
+        elif isinstance(value, int):
+            inverted_style[key] = value  # Handle integer values if needed
+        else:
+            inverted_style[key] = value
+    return inverted_style
+
+# Function to process a JSON file, invert styles, and save the result to a new file
+def process_json_file(file_path):
+    """
+    Processes a JSON file, applies style inversion, and saves the result to a new file.
+
+    Args:
+    - file_path (str): Path to the input JSON file.
+    """
+    with open(file_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    inverted_data = invert_style_recursive(data)
+
+    # Generate output file name
+    filename = os.path.basename(file_path)
+    base_name, ext = os.path.splitext(filename)
+    output_filename = f"{base_name}_light.json"
+    output_file_path = os.path.join(os.path.dirname(file_path), output_filename)
+
+    # Write inverted data to the output file
+    with open(output_file_path, 'w', encoding='utf-8') as f:
+        json.dump(inverted_data, f, indent=2)
+        print(f"Processed {file_path} -> {output_file_path}")
+
+# Main function to process all JSON files in the script's directory
+def main():
+    """
+    Main function to process all JSON files in the script's directory whose names start with "project".
+    """
+    script_directory = os.path.dirname(os.path.realpath(__file__))
+    for filename in os.listdir(script_directory):
+        if filename.startswith("project") and filename.endswith(".json"):
+            file_path = os.path.join(script_directory, filename)
+            process_json_file(file_path)
+
+# Entry point of the script
+if __name__ == "__main__":
+    main()
