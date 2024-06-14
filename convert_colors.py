@@ -1,7 +1,7 @@
 import os
 import json
+import sys
 
-# Function to invert a color represented in hexadecimal format
 def invert_color(color):
     """
     Inverts the color represented in hexadecimal format (with or without alpha channel).
@@ -36,7 +36,6 @@ def invert_color(color):
     else:
         return color
 
-# Function to recursively invert style attributes in a JSON-like data structure
 def invert_style_recursive(data):
     """
     Recursively inverts styles in a JSON-like data structure.
@@ -58,7 +57,6 @@ def invert_style_recursive(data):
             data[i] = invert_style_recursive(item)
     return data
 
-# Function to invert specific style attributes in a dictionary
 def invert_style_values(style):
     """
     Inverts specific style attributes in a dictionary.
@@ -81,7 +79,6 @@ def invert_style_values(style):
             inverted_style[key] = value
     return inverted_style
 
-# Function to process a JSON file, invert styles, and save the result to a new file
 def process_json_file(file_path):
     """
     Processes a JSON file, applies style inversion, and saves the result to a new file.
@@ -105,15 +102,20 @@ def process_json_file(file_path):
         json.dump(inverted_data, f, indent=2)
         print(f"Processed {file_path} -> {output_file_path}")
 
-# Main function to process all JSON files in the script's directory
 def main():
     """
-    Main function to process all JSON files in the script's directory whose names start with "project".
+    Main function to process all JSON files in the specified directory whose names start with "project".
+    If no directory is specified, it processes files in the script's directory.
     """
-    script_directory = os.path.dirname(os.path.realpath(__file__))
-    for filename in os.listdir(script_directory):
+    # Check for directory path argument
+    if len(sys.argv) > 1:
+        directory_path = sys.argv[1]
+    else:
+        directory_path = os.path.dirname(os.path.realpath(__file__))
+
+    for filename in os.listdir(directory_path):
         if filename.startswith("project") and filename.endswith(".json"):
-            file_path = os.path.join(script_directory, filename)
+            file_path = os.path.join(directory_path, filename)
             process_json_file(file_path)
 
 # Entry point of the script
