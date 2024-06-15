@@ -116,7 +116,7 @@ def process_json_file(file_path, minify=False):
 def main():
     """
     Main function to process all JSON files in the specified directory whose names start with "project".
-    If no directory is specified, it processes files in the current working directory directory.
+    If no directory is specified, it processes files in the current working directory.
     """
     # Default values
     directory_path = os.getcwd()

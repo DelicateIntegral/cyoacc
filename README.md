@@ -43,20 +43,29 @@ To use cyoacc in your own Python code, follow these steps:
 import os
 from cyoacc import process_json_file
 
-def main(directory=None, minify=False):
-    # Use current working directory if no argument provided
-    if directory is None:
-        directory = os.getcwd()  
-    
-    # Process all JSON files in the specified directory
+def main():
+    # Default values
+    directory_path = os.getcwd()
+    minify = False
+
+    # Parse arguments
+    args = sys.argv[1:]
+    if len(args) == 1:
+        if args[0].lower() in ['true', 'false']:
+            minify = args[0].lower() == 'true'
+        else:
+            directory_path = args[0]
+    elif len(args) == 2:
+        directory_path = args[0]
+        minify = args[1].lower() == 'true'
+
     files = os.listdir(directory_path)
     for filename in files:
         if "_light" not in filename and filename.endswith(".json"):
             file_path = os.path.join(directory_path, filename)
             process_json_file(file_path, minify)
 
+# Entry point of the script
 if __name__ == "__main__":
-    # You can specify a directory here or leave it as None to use the current directory
-    # You can specify True if you want minified outputs or leave blank for default False
-    main('/path/to/json/files', True)
+    main()
 ```
