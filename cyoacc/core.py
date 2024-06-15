@@ -79,44 +79,57 @@ def invert_style_values(style):
             inverted_style[key] = value
     return inverted_style
 
-def process_json_file(file_path):
+def process_json_file(file_path, minify=False):
     """
     Processes a JSON file, applies style inversion, and saves the result to a new file.
 
     Args:
     - file_path (str): Path to the input JSON file.
+    - minify (bool): Boolean value to determine if output should be generated minified
     """
-    with open(file_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-
-    inverted_data = invert_style_recursive(data)
-
     # Generate output file name
     filename = os.path.basename(file_path)
     base_name, ext = os.path.splitext(filename)
     output_filename = f"{base_name}_light.json"
     output_file_path = os.path.join(os.path.dirname(file_path), output_filename)
 
+    # Remove old outputs
+    if os.path.exists(output_file_path):
+        os.remove(output_file_path)
+
+    # Invert Data
+    with open(file_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    inverted_data = invert_style_recursive(data)
+
     # Write inverted data to the output file
     with open(output_file_path, 'w', encoding='utf-8') as f:
-        json.dump(inverted_data, f, indent=2)
-        print(f"Processed {file_path} -> {output_file_path}")
+        if minify:
+            json.dump(inverted_data, f, indent=None, separators=(',', ':'))
+        else:
+            json.dump(inverted_data, f, indent=2)
+    
+    print(f"Processed {file_path} -> {output_file_path}")
+
 
 def main():
     """
     Main function to process all JSON files in the specified directory whose names start with "project".
-    If no directory is specified, it processes files in the script's directory.
+    If no directory is specified, it processes files in the current working directory directory.
     """
     # Check for directory path argument
     if len(sys.argv) > 1:
         directory_path = sys.argv[1]
+        minify = sys.argv[2]
     else:
-        directory_path = os.path.dirname(os.path.realpath(__file__))
+        directory_path = os.getcwd()  # Use current working directory if no argument provided
 
-    for filename in os.listdir(directory_path):
-        if filename.startswith("project") and filename.endswith(".json"):
+    files = os.listdir(directory_path)
+    for filename in files:
+        if "_light" not in filename and filename.endswith(".json"):
             file_path = os.path.join(directory_path, filename)
-            process_json_file(file_path)
+            process_json_file(file_path, minify)
 
 # Entry point of the script
 if __name__ == "__main__":

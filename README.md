@@ -30,10 +30,10 @@ After installation, you can use the `cyoacc` command to process JSON files:
 ### Command Line Interface
 
 ```bash
-cyoacc [directory_path]
+cyoacc [directory_path] [boolean_value]
 ```
 
-This will process all JSON files in /path/to/json/files starting with "project" and output the modified files with _light appended to their names.
+This will process all JSON files in [directory_path] which do not have "_light" in their name and output the modified files with _light appended to their names. It overwrites any previous outputs. [boolean_value] here decides whether the output is minified or not. True for minified and False is default.
 
 ### Integrating cyoacc into Your Python Code
 
@@ -43,18 +43,20 @@ To use cyoacc in your own Python code, follow these steps:
 import os
 from cyoacc import process_json_file
 
-def main(directory=None):
+def main(directory=None, minify=False):
     # If no directory is provided, use the directory where the script exists
     if directory is None:
-        directory = os.path.dirname(os.path.realpath(__file__))
+        directory = os.getcwd()  # Use current working directory if no argument provided
     
     # Process all JSON files in the specified directory
-    for filename in os.listdir(directory):
-        if filename.startswith("project") and filename.endswith(".json"):
-            file_path = os.path.join(directory, filename)
-            process_json_file(file_path)
+    files = os.listdir(directory_path)
+    for filename in files:
+        if "_light" not in filename and filename.endswith(".json"):
+            file_path = os.path.join(directory_path, filename)
+            process_json_file(file_path, minify)
 
 if __name__ == "__main__":
     # You can specify a directory here or leave it as None to use the current directory
-    main('/path/to/json/files')
+    # You can specify True if you want minified outputs or leave blank for default False
+    main('/path/to/json/files', True)
 ```
