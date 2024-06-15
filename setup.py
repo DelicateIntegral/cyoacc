@@ -9,11 +9,16 @@ setup(
     description='A module to invert colors in JSON files produced by ICC',
     author='DelicateIntegral',
     author_email='',
-    description="CYOA Color Converter",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/DelicateIntegral/cyoacc",
     packages=find_packages(),
+    install_requires=[],
+    entry_points={
+        'console_scripts': [
+            'cyoacc=cyoacc.core:main',
+        ],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: AGPLv3 License",

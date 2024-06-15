@@ -118,12 +118,20 @@ def main():
     Main function to process all JSON files in the specified directory whose names start with "project".
     If no directory is specified, it processes files in the current working directory directory.
     """
-    # Check for directory path argument
-    if len(sys.argv) > 1:
-        directory_path = sys.argv[1]
-        minify = sys.argv[2]
-    else:
-        directory_path = os.getcwd()  # Use current working directory if no argument provided
+    # Default values
+    directory_path = os.getcwd()
+    minify = False
+
+    # Parse arguments
+    args = sys.argv[1:]
+    if len(args) == 1:
+        if args[0].lower() in ['true', 'false']:
+            minify = args[0].lower() == 'true'
+        else:
+            directory_path = args[0]
+    elif len(args) == 2:
+        directory_path = args[0]
+        minify = args[1].lower() == 'true'
 
     files = os.listdir(directory_path)
     for filename in files:
