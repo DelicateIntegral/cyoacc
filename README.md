@@ -44,9 +44,9 @@ import os
 from cyoacc import process_json_file
 
 def main(directory=None, minify=False):
-    # If no directory is provided, use the directory where the script exists
+    # Use current working directory if no argument provided
     if directory is None:
-        directory = os.getcwd()  # Use current working directory if no argument provided
+        directory = os.getcwd()  
     
     # Process all JSON files in the specified directory
     files = os.listdir(directory_path)
