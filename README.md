@@ -1,12 +1,12 @@
 # cyoacc
 
-`cyoacc` is a Python module designed to invert colors in JSON files, specifically produced by Interactive CYOA Creator (ICC) by MeanDelay. This tool is useful for creators who need to invert color schemes in their CYOAs without altering the point bar colors. I made this mainly for Lt. Ouroumov's Worm CYOA.
+`cyoacc` is a Python module designed to invert colors in JSON files, specifically produced by Interactive CYOA Creator (ICC) by MeanDelay. This tool is useful for creators who need to invert color schemes in their CYOAs without altering the point bar colors. I made this mainly for Lt. Ouroumov's Worm CYOA as it was pure black and I wanted light mode.
 
 ## Features
 
 - Inverts colors in JSON files produced by ICC.
 - Preserves the colors of the point bar.
-- Processes all JSON files in a specified directory or the script's directory if none is provided.
+- Processes all JSON files in a specified directory or the current working directory if none is provided.
 
 ## Installation
 
